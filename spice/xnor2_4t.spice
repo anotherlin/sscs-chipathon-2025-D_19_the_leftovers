@@ -1,0 +1,69 @@
+** test
+
+.include design.ngspice
+.lib sm141064.ngspice typical
+
+x1 VDD in_a in_b out GND xnor2_4t
+* noconn out
+V1 VDD GND 3.3
+VIN_A in_a GND 3
+VIN_B in_b GND 3
+
+.control
+save all
+
+let fsig = 1000MEG
+
+let tper = 1 / fsig
+let tfr = 0.01 * tper
+let tff = tfr
+let ton = 0.5 * tper - tfr - tff
+
+let tper2 = 2 / fsig
+let tfr2 = 0.01 * tper2
+let tff2 = tfr2
+let ton2 = 0.5 * tper2 - tfr2 - tff2
+
+let tstop = 3 * tper
+let tstep = 0.0001 * tper
+
+alter @VIN_A[DC] = 0
+alter @VIN_A[PULSE] = [ 0 3.3 0 $&tfr $&tff $&ton $&tper 0 ]
+
+alter @VIN_B[DC] = 0
+alter @VIN_B[PULSE] = [ 0 3.3 0 $&tfr2 $&tff2 $&ton2 $&tper2 0 ]
+
+op
+dc vin 0 3.3 0.01
+tran $&tstep $&tstop
+
+write test.raw
+
+.endc
+
+.subckt xnor2_4t VDD a b o VSS
+
+*.iopin VDD
+*.iopin VSS
+*.ipin a
+*.ipin b
+*.opin o
+
+XM1 w a VDD VDD pfet_03v3 L=0.28u W=0.22u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
++ ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+XM2 o b w VDD pfet_03v3 L=0.28u W=0.22u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
++ ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+
+XM3 o a b VSS nfet_03v3 L=0.28u W=0.22u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
++ ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+XM4 o b a VSS nfet_03v3 L=0.28u W=0.22u nf=1 ad='int((nf+1)/2) * W/nf * 0.18u' as='int((nf+2)/2) * W/nf * 0.18u' pd='2*int((nf+1)/2) * (W/nf + 0.18u)'
++ ps='2*int((nf+2)/2) * (W/nf + 0.18u)' nrd='0.18u / W' nrs='0.18u / W' sa=0 sb=0 sd=0 m=1
+
+.ends
+
+.GLOBAL GND
+.GLOBAL VDD
+
+
+
+.end
