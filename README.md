@@ -21,6 +21,11 @@ The 4 transistors implementation has weak signal case but that may be used "inte
 
 # Development log 
 
+## (17th August 2025)
+
+* Uploaded spice simulation for XOR2 and XNOR2. The spice files need to be cleaned-up and re-organized.
+* xor2_6t candidate for XOR2 standard cell simulation looks good: [screenshot of ngspice](https://github.com/anotherlin/sscs-chipathon-2025-D_19_the_leftovers/blob/main/miscellaneous/screenshot_xor2_6t.png).
+
 ## (16th August 2025)
 
 * Re-organized/cleaned-up Verilog code. XOR2, XNOR2, XOR3, and MAJ3 ready a switch level (simulation done).
